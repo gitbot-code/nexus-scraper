@@ -136,6 +136,7 @@ fn draw_ui(frame: &mut ratatui::Frame, app: &App) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(3),
+            Constraint::Length(5),
             Constraint::Length(2),
             Constraint::Min(8),
             Constraint::Length(1),
@@ -143,20 +144,25 @@ fn draw_ui(frame: &mut ratatui::Frame, app: &App) {
         .split(frame.area());
 
     let input = Paragraph::new(app.input_url.as_str())
-        .block(Block::default().title("Story URL").borders(Borders::ALL));
+        .block(Block::default().title("Story URL (type + Enter)").borders(Borders::ALL));
     frame.render_widget(input, chunks[0]);
+
+    let url_preview = Paragraph::new(app.input_url.as_str())
+        .block(Block::default().title("URL Preview (full, wrapped)").borders(Borders::ALL))
+        .wrap(Wrap { trim: false });
+    frame.render_widget(url_preview, chunks[1]);
 
     let status = Paragraph::new(app.status.as_str()).block(
         Block::default()
             .title("Status")
             .borders(Borders::ALL),
     );
-    frame.render_widget(status, chunks[1]);
+    frame.render_widget(status, chunks[2]);
 
     let body = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(35), Constraint::Percentage(65)])
-        .split(chunks[2]);
+        .split(chunks[3]);
 
     let items: Vec<ListItem> = app
         .story
@@ -217,7 +223,7 @@ fn draw_ui(frame: &mut ratatui::Frame, app: &App) {
     frame.render_widget(reader, body[1]);
 
     let help = Paragraph::new("Enter=fetch URL | j/k=select chapter | l=load chapter | d=download | Up/Down=scroll | q=quit");
-    frame.render_widget(help, chunks[3]);
+    frame.render_widget(help, chunks[4]);
 }
 
 async fn fetch_story(url: &str) -> Result<Story, String> {
